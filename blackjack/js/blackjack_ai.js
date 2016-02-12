@@ -14,7 +14,8 @@ function Person(name)
   this.name = name;
   this.hand = [];
   this.money = 500;
-  this.score = 0;
+  this.points = 0;
+  this.bet = 0;
 }
 
 // Card
@@ -60,128 +61,15 @@ function shuffle(array)
   return array;
 }
 
-// Creates a new deck of cards
-function createDeck()
+function bet(person, bet_money)
 {
-  for(var i=0; i<card_suits.length; i++)
-  {
-	for(var j=0; j<card_numbers.length; j++)
+	if(bet_money > person.money)
 	{
-	  var temporaryCard = new Card(card_numbers[j], card_suits[i]);
-	  deck.push(temporaryCard);
+		console.log("ERROR. Not enough money. Please bet a little less.");
 	}
-  }
-  
-  shuffle(deck);
-  return deck;
-}
-
-// Delivers a card to a person
-function hit(person)
-{
-  if(deck.length == 0)
-  {
-	createDeck();
-  }
-  var tempcard = deck.shift();
-  person.hand.push(tempcard);
-  person.score += tempcard.value;
-  
-  if(tempcard.number == 'A' && person.score > 21)
-  {
-	person.score -= 10;
-  }
-  
-  if(person.score > 21)
-  {
-	person.score = -1;
-	if(person.name == "player"){
-	  $("#hit").hide();
-      $("#stay").hide();
-      $("#bet").hide();
-	  dealerAI();
-	  win(player, dealer);
+	else
+	{
+		bet_money = person.bet;
+		person.money -= bet_money;
 	}
-  }
-  
-  return person.hand;
 }
-
-// The dealer's AI
-function dealerAI()
-{
-  while(dealer.score < 18 && dealer.score !== -1)
-  {
-	hit(dealer);
-  }
-}
-
-// Winning check
-function win(player1, player2)
-{
-  if(player1.score < player2.score)
-  {
-	console.log(player2.name + " wins");
-  } 
-  else if(player1.score > player2.score)
-  {
-	console.log(player1.name + " wins");
-  } 
-  else 
-  {
-	console.log("Tie");
-  }
-}
-
-// Creates a new game
-function newGame()
-{
-  player.hand = [];
-  dealer.hand = [];
-  player.score = 0;
-  dealer.score = 0;
-  // Betting before starting to play
-	
-  // Delivering the cards
-  hit(player);
-  hit(dealer);
-  hit(player);
-  hit(dealer);
-  
-  // Action of the player
-  $("#hit").click(function()
-  {
-    hit(player);  
-  });
-  
-  // Action for the dealer
-  $("#stay").click(function()
-  {
-    dealerAI();
-    $("#hit").hide();
-    $("#stay").hide();
-    $("#bet").hide();
-    win(player, dealer);
-  });
-}
-
-// MAIN FUNCTION
-// Where the action starts
-$(document).ready(function()
-{
-  // Firsts bets
-
-	
-  // Creates a new deck
-  createDeck();
-  
-  // Starts a new game
-  newGame();
-  
-  $("#new-game").click(function(){
-	newGame();
-	$("#hit").show();
-    $("#stay").show();
-    $("#bet").show(); 
-  });
-});
